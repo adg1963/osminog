@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Осьминог — свежие морепродукты с доставкой</title>
+<style>
+  :root {
+    --deep: #0a1e3f;
+    --deep-2: #12294f;
+    --sea: #1e4d7b;
+    --blue: #4a9fd4;
+    --blue-light: #a8d8f0;
+    --foam: #e8f4fa;
+    --white: #ffffff;
+    --coral: #ff6b5b;
+    --coral-dark: #e55545;
+    --gold: #d4a574;
+    --text: #1a2a3f;
+    --text-light: #6b7d92;
+    --gray-light: #d8e2ec;
+    --shadow: 0 6px 24px rgba(10,30,63,0.1);
+    --shadow-hover: 0 16px 48px rgba(10,30,63,0.2);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background: var(--foam);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(135deg, var(--deep) 0%, var(--sea) 100%);
+  }
+  .page-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('https://i.ibb.co/cKtpdJYr/2.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.25;
+    filter: blur(2px);
+  }
+  .page-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,30,63,0.7) 0%, rgba(30,77,123,0.5) 50%, rgba(10,30,63,0.8) 100%);
+  }
+
+  .bubbles {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    bottom: -50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(168,216,240,0.3));
+    border: 1px solid rgba(255,255,255,0.4);
+    animation: bubbleUp linear infinite;
+    opacity: 0.6;
+  }
+  @keyframes bubbleUp {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-110vh) translateX(30px); opacity: 0; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10, 30, 63, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 16px 50px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(74, 159, 212, 0.2);
+    transition: all 0.4s ease;
+  }
+  header .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header .logo-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--blue);
+  }
+  header .logo-text {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+  header .logo-text span { color: var(--blue-light); }
+  header nav { display: flex; gap: 32px; align-items: center; }
+  header nav a {
+    color: var(--foam);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    transition: color 0.3s;
+    font-weight: 500;
+  }
+  header nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 0;
+    width: 0; height: 2px;
+    background: var(--blue);
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  header nav a:hover { color: var(--blue-light); }
+  header nav a:hover::after { width: 100%; }
+  .cart-btn {
+    background: var(--coral);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+  }
+  .cart-btn:hover { background: var(--coral-dark); transform: translateY(-2px); }
+  .cart-btn .count {
+    background: var(--white);
+    color: var(--coral);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .admin-btn {
+    background: transparent;
+    border: 1px solid var(--blue);
+    color: var(--blue-light);
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .admin-btn:hover { background: var(--blue); color: var(--white); }
+  .burger { display: none; font-size: 28px; cursor: pointer; color: var(--white); }
+
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 140px 50px 80px;
+    position: relative;
+  }
+  .hero-inner {
+    max-width: 1300px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1.1fr 0.9fr;
+    gap: 80px; align-items: center;
+    position: relative; z-index: 2;
+  }
+  .hero-text h1 {
+    font-size: 64px;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 24px;
+    animation: fadeUp 1s ease both;
+  }
+  .hero-text h1 .accent { color: var(--blue-light); font-style: italic; }
+  .hero-text .sub {
+    font-size: 20px;
+    color: var(--foam);
+    margin-bottom: 40px;
+    max-width: 540px;
+    opacity: 0.9;
+    animation: fadeUp 1s ease 0.2s both;
+  }
+  .hero-btns {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+  .btn-main {
+    display: inline-block;
+    background: var(--coral);
+    color: var(--white);
+    padding: 18px 42px;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none; cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-main:hover { background: var(--coral-dark); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255,107,91,0.4); }
+  .btn-outline-light {
+    display: inline-block;
+    background: transparent;
+    color: var(--white);
+    padding: 18px 42px;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid var(--blue-light);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-outline-light:hover { background: var(--blue-light); color: var(--deep); }
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+  .hero-visual img {
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    animation: float 6s ease-in-out infinite;
+  }
+</style>
+</head>
+
+<style>
+  section { padding: 100px 50px; position: relative; z-index: 1; }
+  .container { max-width: 1300px; margin: 0 auto; }
+  .section-label {
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .section-title {
+    font-size: 48px;
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+  .section-title .accent { color: var(--blue-light); font-style: italic; }
+  .section-sub {
+    text-align: center;
+    font-size: 18px;
+    color: var(--foam);
+    margin-bottom: 60px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.85;
+  }
+
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+  .product-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+  }
+  .product-img {
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    background: var(--foam);
+  }
+  .product-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .product-card:hover .product-img img { transform: scale(1.08); }
+  .product-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+  .product-body h3 {
+    font-size: 22px;
+    color: var(--deep);
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .product-body .desc {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    flex: 1;
+  }
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .product-price {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--deep);
+    margin-bottom: 16px;
+  }
+  .btn-buy {
+    width: 100%;
+    background: var(--coral);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+  }
+  .btn-buy:hover { background: var(--coral-dark); transform: translateY(-2px); }
+  .btn-buy.in-cart { background: var(--blue); }
+  .btn-buy.in-cart:hover { background: var(--sea); }
+
+  .filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .filters select, .filters input {
+    padding: 12px 18px;
+    border: 2px solid var(--gray-light);
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text);
+  }
+
+  .about-grid, .delivery-grid, .contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+  }
+  .about-item, .delivery-item, .contact-item {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(168,216,240,0.2);
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.4s;
+  }
+  .about-item:hover, .delivery-item:hover, .contact-item:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.12);
+  }
+  .about-icon, .delivery-icon, .contact-icon {
+    font-size: 42px;
+    margin-bottom: 16px;
+  }
+  .about-item h4, .delivery-item h4, .contact-item h4 {
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .about-item p, .delivery-item p, .contact-item p {
+    color: var(--foam);
+    font-size: 15px;
+    opacity: 0.85;
+  }
+  .delivery-num {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--blue-light);
+    margin-bottom: 12px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  footer {
+    background: rgba(10, 30, 63, 0.95);
+    padding: 50px 30px 30px;
+    text-align: center;
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(74,159,212,0.2);
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .footer-logo span { color: var(--blue-light); }
+  .footer-text {
+    color: var(--foam);
+    font-size: 15px;
+    opacity: 0.7;
+    margin-bottom: 16px;
+  }
+  .footer-copy {
+    color: rgba(232,244,250,0.4);
+    font-size: 13px;
+  }
+
+  .login-screen {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(10, 30, 63, 0.95);
+    backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  .login-card {
+    background: var(--white);
+    padding: 50px 44px;
+    max-width: 440px; width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+  }
+  .login-card h1 {
+    font-size: 32px;
+    text-align: center;
+    color: var(--deep);
+    margin-bottom: 8px;
+  }
+  .login-card p {
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 32px;
+  }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sea);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--gray-light);
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--foam);
+    color: var(--text);
+    transition: border 0.3s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: var(--white);
+  }
+  .form-actions {
+    display: flex; gap: 12px; margin-top: 24px;
+  }
+  .form-actions button { flex: 1; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .btn-primary {
+    background: var(--coral);
+    color: var(--white);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary:hover { background: var(--coral-dark); transform: translateY(-2px); }
+  .btn-primary.btn-full { width: 100%; }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--gray-light);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+  .btn-outline:hover { background: var(--gray-light); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10, 30, 63, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1500;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    animation: fadeUp 0.3s ease;
+    margin: auto;
+  }
+  .cart-modal { max-width: 620px; }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--foam);
+  }
+  .modal-header h2 { font-size: 26px; color: var(--deep); }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    color: var(--text-light);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 8px;
+    transition: color 0.3s;
+  }
+  .modal-close:hover { color: var(--coral); }
+
+  .cart-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--gray-light);
+    align-items: center;
+  }
+  .cart-item img {
+    width: 70px; height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-info h4 {
+    font-size: 16px;
+    color: var(--deep);
+    margin-bottom: 4px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .cart-item-info .price { color: var(--coral); font-weight: 700; font-size: 17px; }
+  .cart-qty { display: flex; gap: 8px; align-items: center; }
+  .cart-qty button {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gray-light);
+    background: var(--white);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--sea);
+    transition: all 0.2s;
+  }
+  .cart-qty button:hover { background: var(--blue); color: var(--white); }
+  .cart-qty span { min-width: 32px; text-align: center; font-weight: 600; }
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-top: 16px;
+    border-top: 2px solid var(--deep);
+    font-size: 20px;
+  }
+  .cart-total strong { font-size: 28px; color: var(--deep); }
+  .checkout-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    margin: 20px 0;
+    border-top: 2px solid var(--deep);
+    font-size: 18px;
+  }
+  .checkout-total strong { font-size: 26px; color: var(--deep); }
+  .checkout-note { text-align: center; color: var(--text-light); font-size: 13px; margin-top: 12px; }
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-light); font-size: 16px; }
+
+  .admin-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 110px 40px 60px;
+  }
+  .admin-tabs {
+    display: flex;
+    gap: 8px;
+    background: var(--white);
+    padding: 8px;
+    border-radius: 10px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    flex-wrap: wrap;
+  }
+  .admin-tab {
+    padding: 14px 26px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-light);
+    transition: all 0.3s;
+  }
+  .admin-tab:hover { background: var(--foam); color: var(--text); }
+  .admin-tab.active { background: var(--coral); color: var(--white); }
+  .admin-tab-content h2 { font-size: 32px; color: var(--deep); margin-bottom: 10px; }
+  .admin-desc { color: var(--text-light); margin-bottom: 28px; }
+  .admin-form {
+    background: var(--white);
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+  }
+  .admin-form h3 {
+    font-size: 20px;
+    color: var(--deep);
+    margin-bottom: 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .product-row, .order-row, .client-row {
+    background: var(--white);
+    padding: 20px 24px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .product-row:hover, .order-row:hover, .client-row:hover { box-shadow: var(--shadow-hover); }
+  .row-info { flex: 1; min-width: 240px; }
+  .row-info h4 {
+    font-size: 18px;
+    color: var(--deep);
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .row-info p { color: var(--text-light); font-size: 14px; margin-bottom: 3px; }
+  .status-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .status-new { background: #fff3d4; color: #b8860b; }
+  .status-paid { background: #d4f3d4; color: #2a7a2a; }
+  .status-shipped { background: #d4e8f3; color: #1e5a8a; }
+  .status-delivered { background: #e8d4f3; color: #6a2a8a; }
+  .status-cancelled { background: #f3d4d4; color: #a83a3a; }
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-blue { background: var(--blue); color: var(--white); }
+  .btn-blue:hover { background: var(--sea); }
+  .btn-red { background: #f3d4d4; color: #a83a3a; }
+  .btn-red:hover { background: #e8b8b8; }
+
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--deep);
+    color: var(--white);
+    padding: 16px 30px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #2a7a2a; }
+  .toast.error { background: #a83a3a; }
+
+  @media (max-width: 900px) {
+    header { padding: 14px 20px; }
+    header nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--deep); flex-direction: column; padding: 24px; gap: 18px; }
+    header nav.open { display: flex; }
+    .burger { display: block; }
+    .hero { padding: 110px 24px 60px; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-text h1 { font-size: 38px; }
+    .section-title { font-size: 32px; }
+    section { padding: 70px 24px; }
+    .form-row { grid-template-columns: 1fr; }
+    .admin-container { padding: 100px 20px 40px; }
+    .product-row, .order-row, .client-row { flex-direction: column; align-items: stretch; }
+  }
+</style>
+
+<body>
+
+<div class="page-bg"></div>
+<div class="bubbles" id="bubbles"></div>
+
+<header id="mainHeader">
+  <div class="logo-row">
+    <img src="https://i.ibb.co/39TLhMDX/image.jpg" alt="Осьминог" class="logo-img">
+    <div class="logo-text">Осьми<span>ног</span></div>
+  </div>
+  <div class="burger" onclick="toggleMenu()">☰</div>
+  <nav id="mainNav">
+    <a href="#catalog">Каталог</a>
+    <a href="#about">О нас</a>
+    <a href="#delivery">Доставка</a>
+    <a href="#contacts">Контакты</a>
+    <button class="cart-btn" onclick="showCart()">
+      🛒 Корзина <span class="count" id="cartCount">0</span>
+    </button>
+    <button class="admin-btn" onclick="showLogin()">Вход</button>
+  </nav>
+</header>
+
+<div id="loginScreen" class="login-screen" style="display:none;">
+  <div class="login-card">
+    <h1>Вход в панель</h1>
+    <p>Для администратора магазина</p>
+    <div class="form-group">
+      <label>Логин</label>
+      <input type="text" id="loginInput" placeholder="admin111">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" id="passwordInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="doLogin()"><span>Войти</span></button>
+      <button class="btn-outline" onclick="hideLogin()">Назад</button>
+    </div>
+  </div>
+</div>
+
+<div id="mainSite">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Свежие морепродукты <span class="accent">с доставкой</span></h1>
+        <p class="sub">Дальневосточные креветки, камчатские крабы, свежая рыба и деликатесы — прямо к вашему столу. Доставка по всей России.</p>
+        <div class="hero-btns">
+          <a href="#catalog" class="btn-main">Смотреть каталог</a>
+          <a href="#about" class="btn-outline-light">О нас</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://i.ibb.co/ztrTCLN/image.jpg" alt="Осьминог">
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <div class="section-label reveal">О нас</div>
+      <h2 class="section-title reveal">Магазин <span class="accent">«Осьминог»</span></h2>
+      <p class="section-sub reveal">Мы привозим морепродукты с Дальнего Востока и Камчатки — свежие, качественные, с доставкой</p>
+      <div class="about-grid reveal">
+        <div class="about-item">
+          <div class="about-icon">🐟</div>
+          <h4>Свежесть</h4>
+          <p>Только свежемороженые морепродукты. Прямые поставки с промысла.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-icon">🚚</div>
+          <h4>Доставка</h4>
+          <p>Доставляем по всей России. Курьером, в термобоксах, от 1 дня.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-icon">💳</div>
+          <h4>Оплата</h4>
+          <p>Оплата картой, электронным кошельком или через СБП. Безопасно.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-icon">✅</div>
+          <h4>Гарантия</h4>
+          <p>Если товар не понравился — вернём деньги. Работаем честно.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="catalog">
+    <div class="container">
+      <div class="section-label reveal">Каталог</div>
+      <h2 class="section-title reveal">Наши <span class="accent">морепродукты</span></h2>
+      <p class="section-sub reveal">Свежие деликатесы с доставкой</p>
+
+      <div class="filters reveal">
+        <select id="filterCategory" onchange="renderCatalog()">
+          <option value="all">Все категории</option>
+          <option value="Креветки">Креветки</option>
+          <option value="Крабы">Крабы</option>
+          <option value="Рыба">Рыба</option>
+          <option value="Икра">Икра</option>
+          <option value="Моллюски">Моллюски</option>
+          <option value="Морепродукты">Морепродукты</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Поиск по названию..." oninput="renderCatalog()">
+      </div>
+
+      <div class="catalog-grid" id="catalogGrid"></div>
+    </div>
+  </section>
+
+  <section id="delivery">
+    <div class="container">
+      <div class="section-label reveal">Доставка</div>
+      <h2 class="section-title reveal">Как мы <span class="accent">доставляем</span></h2>
+      <p class="section-sub reveal">Свежесть сохраняется на всём пути</p>
+      <div class="delivery-grid reveal">
+        <div class="delivery-item">
+          <div class="delivery-num">01</div>
+          <h4>Заказ</h4>
+          <p>Выбираете товары, оформляете заказ на сайте.</p>
+        </div>
+        <div class="delivery-item">
+          <div class="delivery-num">02</div>
+          <h4>Оплата</h4>
+          <p>Оплачиваете удобным способом через Робокассу.</p>
+        </div>
+        <div class="delivery-item">
+          <div class="delivery-num">03</div>
+          <h4>Сборка</h4>
+          <p>Собираем заказ и упаковываем в термобокс.</p>
+        </div>
+        <div class="delivery-item">
+          <div class="delivery-num">04</div>
+          <h4>Доставка</h4>
+          <p>Курьер привозит заказ в течение 1–3 дней.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacts">
+    <div class="container">
+      <div class="section-label reveal">Контакты</div>
+      <h2 class="section-title reveal">Свяжитесь <span class="accent">с нами</span></h2>
+      <p class="section-sub reveal">Мы всегда рады помочь</p>
+      <div class="contacts-grid reveal">
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <h4>Телефон</h4>
+          <p><a href="tel:+79803253275" style="color: var(--blue); text-decoration: none;">+7 980 325-32-75</a></p>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <h4>Email</h4>
+          <p><a href="mailto:doliandrej@yandex.ru" style="color: var(--blue); text-decoration: none;">doliandrej@yandex.ru</a></p>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🕐</div>
+          <h4>Режим работы</h4>
+          <p>Ежедневно с 9:00 до 21:00</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">🐙 Осьми<span>ног</span></div>
+    <p class="footer-text">Свежие морепродукты с доставкой по России</p>
+    <p class="footer-copy">© 2026 Магазин «Осьминог». Все права защищены.</p>
+  </footer>
+
+</div>
+
+<div id="cartModal" class="modal-overlay">
+  <div class="modal cart-modal">
+    <div class="modal-header">
+      <h2>🛒 Корзина</h2>
+      <button class="modal-close" onclick="hideCart()">×</button>
+    </div>
+    <div id="cartContent"></div>
+  </div>
+</div>
+
+<div id="checkoutModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📦 Оформление заказа</h2>
+      <button class="modal-close" onclick="hideCheckout()">×</button>
+    </div>
+    <div class="form-group">
+      <label>Ваше имя *</label>
+      <input type="text" id="clientName" placeholder="Как к вам обращаться">
+    </div>
+    <div class="form-group">
+      <label>Телефон *</label>
+      <input type="tel" id="clientPhone" placeholder="+7 (___) ___-__-__">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="clientEmail" placeholder="email@example.com">
+    </div>
+    <div class="form-group">
+      <label>Адрес доставки</label>
+      <input type="text" id="clientAddress" placeholder="Город, улица, дом, квартира">
+    </div>
+    <div class="form-group">
+      <label>Комментарий к заказу</label>
+      <textarea id="clientComment" rows="2" placeholder="Пожелания по доставке..."></textarea>
+    </div>
+    <div class="checkout-total">
+      <span>Итого:</span>
+      <strong id="checkoutTotal">0 ₽</strong>
+    </div>
+    <button class="btn-primary btn-full" onclick="submitOrder()"><span>Оплатить через Робокассу</span></button>
+    <p class="checkout-note">Демо-режим: оплата имитируется</p>
+  </div>
+</div>
+
+<div id="adminPanel" style="display:none;">
+  <header>
+    <div class="logo-row">
+      <img src="https://i.ibb.co/39TLhMDX/image.jpg" alt="Осьминог" class="logo-img">
+      <div class="logo-text">Осьми<span>ног</span> · Админ</div>
+    </div>
+    <nav>
+      <button class="admin-btn" onclick="showClientView()">На сайт</button>
+      <button class="admin-btn" onclick="logout()" style="border-color: var(--coral); color: var(--coral);">Выйти</button>
+    </nav>
+  </header>
+
+  <div class="admin-container">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('products', this)">🐟 Товары</button>
+      <button class="admin-tab" onclick="switchAdminTab('orders', this)">📦 Заказы</button>
+      <button class="admin-tab" onclick="switchAdminTab('clients', this)">👥 Клиенты</button>
+    </div>
+
+    <div id="adminTabProducts" class="admin-tab-content">
+      <h2>Управление товарами</h2>
+      <p class="admin-desc">Создавайте, редактируйте и удаляйте товары</p>
+
+      <div class="admin-form">
+        <h3 id="productFormTitle">➕ Новый товар</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Название *</label>
+            <input type="text" id="pName" placeholder="Креветки тигровые">
+          </div>
+          <div class="form-group">
+            <label>Категория *</label>
+            <select id="pCategory">
+              <option value="Креветки">Креветки</option>
+              <option value="Крабы">Крабы</option>
+              <option value="Рыба">Рыба</option>
+              <option value="Икра">Икра</option>
+              <option value="Моллюски">Моллюски</option>
+              <option value="Морепродукты">Морепродукты</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Описание</label>
+          <textarea id="pDescription" rows="2" placeholder="Краткое описание товара..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Цена, ₽ *</label>
+            <input type="number" id="pPrice" placeholder="1890">
+          </div>
+          <div class="form-group">
+            <label>Вес / объём</label>
+            <input type="text" id="pWeight" placeholder="1 кг">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ссылка на фото (imgbb)</label>
+          <input type="text" id="pPhoto" placeholder="https://i.ibb.co/...">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="saveProduct()"><span>💾 Сохранить</span></button>
+          <button class="btn-outline" onclick="cancelProductEdit()">Отмена</button>
+        </div>
+        <input type="hidden" id="editingProductId" value="">
+      </div>
+
+      <div id="productsList"></div>
+    </div>
+
+    <div id="adminTabOrders" class="admin-tab-content" style="display:none;">
+      <h2>Заказы клиентов</h2>
+      <p class="admin-desc">Обрабатывайте входящие заказы — меняйте статус</p>
+      <div id="ordersList"></div>
+    </div>
+
+    <div id="adminTabClients" class="admin-tab-content" style="display:none;">
+      <h2>База клиентов</h2>
+      <p class="admin-desc">Все клиенты магазина. Можно выгрузить в файл</p>
+      <button class="btn-primary" style="margin-bottom:20px;" onclick="exportClients()"><span>📥 Выгрузить в CSV</span></button>
+      <div id="clientsList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ==================== SUPABASE ==================== */
+  const SUPABASE_URL = 'https://luwtyfddoenesnymxsmf.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1d3R5ZmRkb2VuZXNueW14c21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2OTY0OTcsImV4cCI6MjEwNzI3MjQ5N30.9PZ8GNjZT1u-qfvFm9fFqGAo9gXj4yDnyDIg_VgRRJQ';
+
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* ==================== СОСТОЯНИЕ ==================== */
+  let currentUser = null;
+  let allProducts = [];
+  let cart = [];
+
+  /* ==================== УТИЛИТЫ ==================== */
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function toast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => { t.className = 'toast ' + type; }, 3000);
+  }
+  function toggleMenu() {
+    document.getElementById('mainNav').classList.toggle('open');
+  }
+  function fmt(n) {
+    return n.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  /* ==================== КАТАЛОГ ==================== */
+  async function loadProducts() {
+    const { data, error } = await supabaseClient.from('products').select('*').order('id');
+    if (error) { console.error(error); toast('Ошибка загрузки товаров', 'error'); return; }
+    allProducts = data || [];
+    renderCatalog();
+  }
+
+  function renderCatalog() {
+    const grid = document.getElementById('catalogGrid');
+    if (!grid) return;
+    const cat = document.getElementById('filterCategory').value;
+    const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+    let filtered = allProducts.filter(p => p.in_stock !== false);
+    if (cat !== 'all') filtered = filtered.filter(p => p.category === cat);
+    if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="empty-state">Товаров не найдено</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card reveal';
+      const inCart = cart.find(c => c.id === p.id);
+      card.innerHTML = `
+        <div class="product-img"><img src="${esc(p.photo_url)}" alt="${esc(p.name)}"></div>
+        <div class="product-body">
+          <h3>${esc(p.name)}</h3>
+          <p class="desc">${esc(p.description || '')}</p>
+          <div class="product-meta">
+            <span>${esc(p.category)}</span>
+            <span>${esc(p.weight || '')}</span>
+          </div>
+          <div class="product-price">${fmt(p.price)}</div>
+          <button class="btn-buy ${inCart ? 'in-cart' : ''}" onclick="addToCart(${p.id})">
+            ${inCart ? '✓ В корзине' : '🛒 В корзину'}
+          </button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    initReveal();
+  }
+
+  /* ==================== КОРЗИНА ==================== */
+  function addToCart(id) {
+    const product = allProducts.find(p => p.id === id);
+    if (!product) return;
+    const item = cart.find(c => c.id === id);
+    if (item) {
+      item.qty++;
+    } else {
+      cart.push({ id: product.id, name: product.name, price: product.price, photo_url: product.photo_url, qty: 1 });
+    }
+    updateCartCount();
+    renderCatalog();
+    toast('Товар добавлен в корзину', 'success');
+  }
+
+  function updateCartCount() {
+    const count = cart.reduce((s, c) => s + c.qty, 0);
+    document.getElementById('cartCount').textContent = count;
+  }
+
+  function showCart() {
+    const modal = document.getElementById('cartModal');
+    const content = document.getElementById('cartContent');
+    if (cart.length === 0) {
+      content.innerHTML = '<div class="empty-state">🛒 Корзина пуста. Добавьте товары из каталога.</div>';
+    } else {
+      content.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img src="${esc(item.photo_url)}" alt="${esc(item.name)}">
+          <div class="cart-item-info">
+            <h4>${esc(item.name)}</h4>
+            <div class="price">${fmt(item.price)}</div>
+          </div>
+          <div class="cart-qty">
+            <button onclick="changeQty(${item.id}, -1)">−</button>
+            <span>${item.qty}</span>
+            <button onclick="changeQty(${item.id}, 1)">+</button>
+          </div>
+        </div>
+      `).join('') + `
+        <div class="cart-total">
+          <span>Итого:</span>
+          <strong>${fmt(cart.reduce((s, c) => s + c.price * c.qty, 0))}</strong>
+        </div>
+        <button class="btn-primary btn-full" onclick="openCheckout()"><span>📦 Оформить заказ</span></button>
+      `;
+    }
+    modal.classList.add('active');
+  }
+
+  function hideCart() {
+    document.getElementById('cartModal').classList.remove('active');
+  }
+
+  function changeQty(id, delta) {
+    const item = cart.find(c => c.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+    updateCartCount();
+    showCart();
+    renderCatalog();
+  }
+
+  function openCheckout() {
+    if (cart.length === 0) { toast('Корзина пуста', 'error'); return; }
+    hideCart();
+    document.getElementById('checkoutTotal').textContent = fmt(cart.reduce((s, c) => s + c.price * c.qty, 0));
+    document.getElementById('checkoutModal').classList.add('active');
+  }
+
+  function hideCheckout() {
+    document.getElementById('checkoutModal').classList.remove('active');
+  }
+
+  /* ==================== ОФОРМЛЕНИЕ ЗАКАЗА ==================== */
+  async function submitOrder() {
+    const name = document.getElementById('clientName').value.trim();
+    const phone = document.getElementById('clientPhone').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const address = document.getElementById('clientAddress').value.trim();
+    const comment = document.getElementById('clientComment').value.trim();
+
+    if (!name || !phone) { toast('Заполните имя и телефон', 'error'); return; }
+
+    const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+
+    const { data: order, error } = await supabaseClient.from('orders').insert({
+      client_name: name,
+      client_phone: phone,
+      client_email: email,
+      address: address,
+      comment: comment,
+      total: total,
+      status: 'paid',
+      payment_status: 'demo_paid'
+    }).select().single();
+
+    if (error) { toast('Ошибка оформления: ' + error.message, 'error'); return; }
+
+    const items = cart.map(c => ({
+      order_id: order.id,
+      product_id: c.id,
+      product_name: c.name,
+      quantity: c.qty,
+      price: c.price
+    }));
+
+    const { error: errItems } = await supabaseClient.from('order_items').insert(items);
+    if (errItems) { console.error(errItems); }
+
+    const existingClient = await supabaseClient.from('clients').select('id, orders_count, total_spent').eq('phone', phone).maybeSingle();
+    if (existingClient.data) {
+      await supabaseClient.from('clients').update({
+        orders_count: (existingClient.data.orders_count || 0) + 1,
+        total_spent: (existingClient.data.total_spent || 0) + total
+      }).eq('id', existingClient.data.id);
+    } else {
+      await supabaseClient.from('clients').insert({
+        name, phone, email,
+        orders_count: 1,
+        total_spent: total
+      });
+    }
+
+    cart = [];
+    updateCartCount();
+    renderCatalog();
+    hideCheckout();
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientPhone').value = '';
+    document.getElementById('clientEmail').value = '';
+    document.getElementById('clientAddress').value = '';
+    document.getElementById('clientComment').value = '';
+    toast('✅ Заказ оформлен! (Демо-оплата прошла)', 'success');
+  }
+
+  /* ==================== АДМИН ==================== */
+  function showLogin() {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+  function hideLogin() {
+    document.getElementById('loginScreen').style.display = 'none';
+  }
+  async function doLogin() {
+    const login = document.getElementById('loginInput').value.trim();
+    const password = document.getElementById('passwordInput').value.trim();
+    if (!login || !password) { toast('Введите логин и пароль', 'error'); return; }
+
+    const { data, error } = await supabaseClient
+      .from('admin_users')
+      .select('id, login')
+      .eq('login', login)
+      .eq('password', password)
+      .maybeSingle();
+
+    if (error) { toast('Ошибка: ' + error.message, 'error'); return; }
+    if (!data) { toast('Неверный логин или пароль', 'error'); return; }
+
+    currentUser = data;
+    toast('Добро пожаловать!', 'success');
+    document.getElementById('loginInput').value = '';
+    document.getElementById('passwordInput').value = '';
+    hideLogin();
+    document.getElementById('mainSite').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadProducts();
+    loadOrders();
+    loadClients();
+  }
+  function logout() {
+    currentUser = null;
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('mainSite').style.display = 'block';
+    toast('Вы вышли');
+  }
+  function showClientView() {
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('mainSite').style.display = 'block';
+  }
+  function switchAdminTab(tab, btn) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('adminTabProducts').style.display = tab === 'products' ? 'block' : 'none';
+    document.getElementById('adminTabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+    document.getElementById('adminTabClients').style.display = tab === 'clients' ? 'block' : 'none';
+    if (tab === 'products') renderProductsAdmin();
+    if (tab === 'orders') loadOrders();
+    if (tab === 'clients') loadClients();
+  }
+
+  function renderProductsAdmin() {
+    const list = document.getElementById('productsList');
+    list.innerHTML = '';
+    allProducts.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'product-row';
+      row.innerHTML = `
+        <div class="row-info">
+          <h4>${esc(p.name)}</h4>
+          <p>${esc(p.category)} · ${esc(p.weight || '')} · ${fmt(p.price)}</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-sm btn-blue" onclick="editProduct(${p.id})">✏️ Изменить</button>
+          <button class="btn-sm btn-red" onclick="deleteProduct(${p.id})">🗑 Удалить</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  async function saveProduct() {
+    const id = document.getElementById('editingProductId').value;
+    const name = document.getElementById('pName').value.trim();
+    const category = document.getElementById('pCategory').value;
+    const description = document.getElementById('pDescription').value.trim();
+    const price = parseInt(document.getElementById('pPrice').value);
+    const weight = document.getElementById('pWeight').value.trim();
+    const photo_url = document.getElementById('pPhoto').value.trim();
+
+    if (!name || !price) { toast('Заполните название и цену', 'error'); return; }
+
+    if (id) {
+      const { error } = await supabaseClient.from('products').update({ name, category, description, price, weight, photo_url }).eq('id', id);
+      if (error) { toast('Ошибка: ' + error.message, 'error'); return; }
+      toast('Товар обновлён', 'success');
+    } else {
+      const { error } = await supabaseClient.from('products').insert({ name, category, description, price, weight, photo_url });
+      if (error) { toast('Ошибка: ' + error.message, 'error'); return; }
+      toast('Товар создан', 'success');
+    }
+    cancelProductEdit();
+    await loadProducts();
+    renderProductsAdmin();
+  }
+
+  async function editProduct(id) {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pCategory').value = p.category;
+    document.getElementById('pDescription').value = p.description || '';
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pWeight').value = p.weight || '';
+    document.getElementById('pPhoto').value = p.photo_url || '';
+    document.getElementById('editingProductId').value = p.id;
+    document.getElementById('productFormTitle').textContent = '✏️ Редактирование товара';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelProductEdit() {
+    document.getElementById('pName').value = '';
+    document.getElementById('pCategory').value = 'Креветки';
+    document.getElementById('pDescription').value = '';
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pWeight').value = '';
+    document.getElementById('pPhoto').value = '';
+    document.getElementById('editingProductId').value = '';
+    document.getElementById('productFormTitle').textContent = '➕ Новый товар';
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm('Удалить товар?')) return;
+    const { error } = await supabaseClient.from('products').delete().eq('id', id);
+    if (error) { toast('Ошибка: ' + error.message, 'error'); return; }
+    toast('Товар удалён', 'success');
+    await loadProducts();
+    renderProductsAdmin();
+  }
+
+  async function loadOrders() {
+    const list = document.getElementById('ordersList');
+    if (!list) return;
+    list.innerHTML = '<div class="empty-state">Загрузка...</div>';
+    const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+    if (error) { list.innerHTML = '<div class="empty-state">Ошибка: ' + error.message + '</div>'; return; }
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="empty-state">Заказов пока нет</div>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach(o => {
+      const statusMap = { new: 'Новый', paid: 'Оплачен', shipped: 'Отправлен', delivered: 'Доставлен', cancelled: 'Отменён' };
+      const row = document.createElement('div');
+      row.className = 'order-row';
+      row.innerHTML = `
+        <div class="row-info">
+          <h4>Заказ №${o.id} · ${esc(o.client_name)}</h4>
+          <p>📞 ${esc(o.client_phone)} · ✉️ ${esc(o.client_email || '—')}</p>
+          <p>📍 ${esc(o.address || '—')}</p>
+          <p>💰 ${fmt(o.total)}</p>
+          <span class="status-badge status-${o.status}">${statusMap[o.status]}</span>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn-sm btn-blue" onclick="changeOrderStatus(${o.id}, 'paid')">Оплачен</button>
+          <button class="btn-sm btn-blue" onclick="changeOrderStatus(${o.id}, 'shipped')">Отправлен</button>
+          <button class="btn-sm btn-blue" onclick="changeOrderStatus(${o.id}, 'delivered')">Доставлен</button>
+          <button class="btn-sm btn-red" onclick="changeOrderStatus(${o.id}, 'cancelled')">Отменить</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  async function changeOrderStatus(id, status) {
+    const { error } = await supabaseClient.from('orders').update({ status }).eq('id', id);
+    if (error) { toast('Ошибка: ' + error.message, 'error'); return; }
+    toast('Статус обновлён', 'success');
+    loadOrders();
+  }
+
+  async function loadClients() {
+    const list = document.getElementById('clientsList');
+    if (!list) return;
+    list.innerHTML = '<div class="empty-state">Загрузка...</div>';
+    const { data, error } = await supabaseClient.from('clients').select('*').order('created_at', { ascending: false });
+    if (error) { list.innerHTML = '<div class="empty-state">Ошибка: ' + error.message + '</div>'; return; }
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="empty-state">Клиентов пока нет</div>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'client-row';
+      row.innerHTML = `
+        <div class="row-info">
+          <h4>${esc(c.name)}</h4>
+          <p>📞 ${esc(c.phone)} · ✉️ ${esc(c.email || '—')}</p>
+          <p>Заказов: ${c.orders_count} · На сумму: ${fmt(c.total_spent)}</p>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function exportClients() {
+    const rows = [['Имя', 'Телефон', 'Email', 'Заказов', 'Сумма', 'Дата']];
+    document.querySelectorAll('#clientsList .client-row').forEach(row => {
+      const h4 = row.querySelector('h4').textContent;
+      const ps = row.querySelectorAll('p');
+      const phone = ps[0].textContent.split('·')[0].replace('📞', '').trim();
+      const email = ps[0].textContent.split('·')[1]?.replace('✉️', '').trim() || '';
+      const ordersCount = ps[1].textContent.split('·')[0].replace('Заказов:', '').trim();
+      const total = ps[1].textContent.split('·')[1]?.replace('На сумму:', '').trim() || '';
+      rows.push([h4, phone, email, ordersCount, total, new Date().toLocaleDateString('ru-RU')]);
+    });
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'clients_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Клиенты выгружены в CSV', 'success');
+  }
+
+  function initBubbles() {
+    const container = document.getElementById('bubbles');
+    if (!container) return;
+    for (let i = 0; i < 25; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = 8 + Math.random() * 30;
+      b.style.width = size + 'px';
+      b.style.height = size + 'px';
+      b.style.left = Math.random() * 100 + '%';
+      b.style.animationDuration = (8 + Math.random() * 12) + 's';
+      b.style.animationDelay = Math.random() * 10 + 's';
+      container.appendChild(b);
+    }
+  }
+
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal:not(.active)').forEach(el => obs.observe(el));
+  }
+
+  window.addEventListener('scroll', () => {
+    const h = document.getElementById('mainHeader');
+    if (h) h.style.padding = window.scrollY > 50 ? '12px 50px' : '16px 50px';
+  });
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    initBubbles();
+    await loadProducts();
+    initReveal();
+  });
+</script>
+
+</body>
+</html>
